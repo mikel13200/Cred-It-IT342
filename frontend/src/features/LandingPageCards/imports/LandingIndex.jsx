@@ -1,0 +1,9 @@
+export { default as DemoImageUploader } from "../../demoTOR/demoImageUploader";
+export { default as SimplifiedProcessCard } from "../SimplifiedProcessCard";
+export { default as EnhancedEfficiencyCard } from "../EnhancedEfficiencyCard";
+export { default as SmartDecisionsCard } from "../SmartDecisionsCard";
+export { default as InfoApp } from "../InfoApp";
+export { default as InfoCard } from "../InfoCard";
+export { default as FooterCard } from "../footerCard";
+export { default as WelcomeCard } from "../WelcomeCard";
+export { default as HeaderCard } from "../HeaderCard";

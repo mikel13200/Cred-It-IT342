@@ -1,0 +1,98 @@
+import React, { useState } from "react";
+import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+const LoginPanelCard = ({ onClose }) => {
+  const [accountID, setAccountID] = useState("");
+  const [accountPass, setAccountPass] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+  e.preventDefault();
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ AccountID: accountID, AccountPass: accountPass }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(data.message);
+
+        // Store username locally
+        localStorage.setItem("userName", accountID);
+
+        // Redirect based on role
+        if (data.status === "Student") {
+          navigate("/homepage"); // maps to HomePage.jsx
+        } else if (data.status === "Faculty") {
+          navigate("/departmenthome"); // maps to DepartmentHome.jsx
+        } else {
+          setMessage("Unauthorized role");
+        }
+      } else {
+        setMessage(data.error || "Login failed");
+        setAccountID(""); // clear input
+        setAccountPass("");
+      }
+    } catch (error) {
+      setMessage("Error: " + error.message);
+      setAccountID("");
+      setAccountPass("");
+    }
+  };
+
+
+  return (
+    <div className="p-6 h-full flex flex-col">
+      {/* Close button */}
+      <div className="flex justify-end">
+        <button
+          onClick={onClose}
+          className="text-gray-600 hover:text-gray-900 transition"
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 flex flex-col justify-center">
+        <h2 className="text-2xl font-bold mb-6 text-gray-900">Login</h2>
+        <form className="space-y-4" onSubmit={handleLogin}>
+          <input
+            type="text"
+            placeholder="ID"
+            value={accountID}
+            onChange={(e) => setAccountID(e.target.value)}
+            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={accountPass}
+            onChange={(e) => setAccountPass(e.target.value)}
+            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Login
+          </button>
+        </form>
+
+        {message && (
+          <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default LoginPanelCard;

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { Menu, User, GraduationCap, Search, X } from "lucide-react"
 import { Button } from "../components/ui/button"
 import SidebarDropdown from "../components/SidebarDropdownFaculty"
+import API_BASE_URL from "../config/api"
 
 export default function DepartmentHome() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -23,19 +24,19 @@ export default function DepartmentHome() {
     if (storedName) setUserName(storedName)
 
     // Fetch all RequestTOR entries
-    fetch("http://localhost:8000/api/requestTOR/")
+    fetch(`${API_BASE_URL}/requestTOR/`)
       .then((res) => res.json())
       .then((data) => setRequests(data))
       .catch((err) => console.error("Error fetching requests:", err))
 
     // Fetch all PendingRequest entries
-    fetch("http://localhost:8000/api/pendingRequest/")
+    fetch(`${API_BASE_URL}/pendingRequest/`)
       .then((res) => res.json())
       .then((data) => setApplications(data))
       .catch((err) => console.error("Error fetching applications:", err))
 
     // Fetch all listFinalTor entries
-    fetch("http://localhost:8000/api/finalDocuments/listFinalTor/")
+    fetch(`${API_BASE_URL}/finalDocuments/listFinalTor/`)
       .then((res) => res.json())
       .then((data) => setAcceptedList(data))
       .catch((err) => console.error("Error fetching accepted list:", err))

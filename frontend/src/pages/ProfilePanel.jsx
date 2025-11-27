@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import API_BASE_URL from "../config/api";
 
 export default function ProfilePanel({ userId: propUserId, onClose }) {
   const storedUserId = localStorage.getItem("userName");
@@ -24,7 +25,7 @@ export default function ProfilePanel({ userId: propUserId, onClose }) {
 
     setForm((prev) => ({ ...prev, user_id: userId }));
 
-    fetch(`http://localhost:8000/api/profile/${userId}/`)
+    fetch(`${API_BASE_URL}/profile/${userId}/`)
       .then((res) => {
         if (!res.ok) {
           // If 404, profile does not exist → user can create new
@@ -67,7 +68,7 @@ export default function ProfilePanel({ userId: propUserId, onClose }) {
   const handleSave = async () => {
     try {
       // Always use POST with update_or_create in Django backend
-      const res = await fetch("http://localhost:8000/api/profile/save/", {
+      const res = await fetch(`${API_BASE_URL}/profile/save/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

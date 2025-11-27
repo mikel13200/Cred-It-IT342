@@ -1,4 +1,3 @@
-
 "use client"
 import { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
@@ -8,6 +7,7 @@ import ImageUploader from "../components/ImageUploader";
 import ImageEditorDialog from "../features/image-editor/ImageEditorDialog";
 import OcrResults from "../components/OcrResults";
 import { Button } from "../components/ui/button";
+import API_BASE_URL from "../config/api";
 
 import { useImageEditor } from "../features/image-editor/useImageEditor";
 
@@ -52,7 +52,7 @@ export default function HomePage() {
     formData.append("file", selectedFile);
 
     try {
-      const response = await fetch("http://localhost:8000/api/ocr/", {
+      const response = await fetch(`${API_BASE_URL}/ocr/`, {
         method: "POST",
         body: formData,
       });

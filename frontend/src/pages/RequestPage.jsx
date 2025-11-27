@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { GraduationCap } from "lucide-react"
+import API_BASE_URL from "../config/api"
 
 export default function RequestPage() {
   const { id } = useParams()
@@ -14,19 +15,19 @@ export default function RequestPage() {
 
   useEffect(() => {
     // Fetch profile
-    fetch(`http://localhost:8000/api/profile/?user_id=${id}`)
+    fetch(`${API_BASE_URL}/profile/?user_id=${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data && data.length > 0) setProfile(data[0])
       })
 
     // Fetch CIT TOR
-    fetch("http://localhost:8000/api/citTorContent/")
+    fetch(`${API_BASE_URL}/citTorContent/`)
       .then((res) => res.json())
       .then(setCitTor)
 
     // Fetch Applicant TOR
-    fetch(`http://localhost:8000/api/compareResultTOR/?account_id=${id}`)
+    fetch(`${API_BASE_URL}/compareResultTOR/?account_id=${id}`)
       .then((res) => res.json())
       .then(setApplicantTor)
   }, [id])
@@ -44,7 +45,7 @@ export default function RequestPage() {
       type: "deny",
       action: async () => {
         try {
-          const res = await fetch(`http://localhost:8000/api/pendingRequest/deny/${id}/`, {
+          const res = await fetch(`${API_BASE_URL}/pendingRequest/deny/${id}/`, {
             method: "DELETE",
           })
 
@@ -75,7 +76,7 @@ export default function RequestPage() {
 
   const handleDeny = async () => {
     try {
-      await fetch(`http://localhost:8000/api/pendingRequest/deny/${id}/`, { method: "DELETE" })
+      await fetch(`${API_BASE_URL}/pendingRequest/deny/${id}/`, { method: "DELETE" })
       setNotification({ message: "Request denied successfully.", type: "success", show: true })
       setTimeout(() => navigate("/DepartmentHome"), 1500)
     } catch (error) {
@@ -86,7 +87,7 @@ export default function RequestPage() {
 
   const handleAccept = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/pendingRequest/accept/", {
+      const res = await fetch(`${API_BASE_URL}/pendingRequest/accept/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ applicant_id: id }),

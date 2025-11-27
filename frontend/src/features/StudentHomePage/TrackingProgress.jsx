@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../config/api";
 
 export default function TrackingProgress({ userName }) {
   const [progress, setProgress] = useState(0);
@@ -14,19 +15,19 @@ export default function TrackingProgress({ userName }) {
       try {
         // 1️⃣ Check RequestTOR
         const requestRes = await axios.get(
-          `http://localhost:8000/api/track_user_progress/?accountID=${userName}`
+          `${API_BASE_URL}/track_user_progress/?accountID=${userName}`
         );
         const inRequest = requestRes.data.exists;
 
         // 2️⃣ Check PendingRequest
         const pendingRes = await axios.get(
-          `http://localhost:8000/api/pendingRequest/track_user_progress/?applicant_id=${userName}`
+          `${API_BASE_URL}/pendingRequest/track_user_progress/?applicant_id=${userName}`
         );
         const inPending = pendingRes.data.exists;
 
         // 3️⃣ Check FinalDocuments
         const finalRes = await axios.get(
-          `http://localhost:8000/api/finalDocuments/track_user_progress/?accountID=${userName}`
+          `${API_BASE_URL}/finalDocuments/track_user_progress/?accountID=${userName}`
         );
         const inFinal = finalRes.data.exists;
 
@@ -46,7 +47,7 @@ export default function TrackingProgress({ userName }) {
   const handleViewTracker = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/api/tracker_accreditation/?account_id=${userName}`
+        `${API_BASE_URL}/tracker_accreditation/?account_id=${userName}`
       );
       setTrackerData(res.data);
       setShowTracker(true);

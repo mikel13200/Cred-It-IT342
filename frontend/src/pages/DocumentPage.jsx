@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { GraduationCap, ChevronDown, ChevronUp } from "lucide-react"
+import API_BASE_URL from "../config/api"
 
 export default function DocumentPage() {
   const { id } = useParams()
@@ -31,19 +32,19 @@ export default function DocumentPage() {
 
   useEffect(() => {
     // Fetch profile
-    fetch(`http://localhost:8000/api/profile/?user_id=${id}`)
+    fetch(`${API_BASE_URL}/profile/?user_id=${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data && data.length > 0) setProfile(data[0])
       })
 
     // Fetch School TOR
-    fetch("http://localhost:8000/api/citTorContent/")
+    fetch(`${API_BASE_URL}/citTorContent/`)
       .then((res) => res.json())
       .then(setCitTor)
 
     // Fetch Applicant TOR
-    fetch(`http://localhost:8000/api/compareResultTOR/?account_id=${id}`)
+    fetch(`${API_BASE_URL}/compareResultTOR/?account_id=${id}`)
       .then((res) => res.json())
       .then(setApplicantTor)
   }, [id])
@@ -71,7 +72,7 @@ export default function DocumentPage() {
 
         try {
           // Send POST request to backend
-          const res = await fetch("http://localhost:8000/api/pendingRequest/update_status_for_document/", {
+          const res = await fetch(`${API_BASE_URL}/pendingRequest/update_status_for_document/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -138,7 +139,7 @@ export default function DocumentPage() {
     message: "Are you sure you want to proceed with this decision? This will be a final action.",
     confirmCallback: async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/finalDocuments/finalize_request/", {
+        const res = await fetch(`${API_BASE_URL}/finalDocuments/finalize_request/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ account_id: id })
@@ -160,7 +161,7 @@ export default function DocumentPage() {
 
 const handleEditSave = async () => {
   try {
-    const res = await fetch("http://localhost:8000/api/update_cit_tor_entry/", {
+    const res = await fetch(`${API_BASE_URL}/update_cit_tor_entry/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editData),
@@ -186,25 +187,25 @@ const handleEditSave = async () => {
 
     // Update Credit Evaluation
   const updateEvaluation = async (entryId, status) => {
-    await fetch(`http://localhost:8000/api/update_credit_evaluation/`, {
+    await fetch(`${API_BASE_URL}/update_credit_evaluation/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: entryId, credit_evaluation: status }),
     })
     // Refresh data
-    const updated = await fetch(`http://localhost:8000/api/compareResultTOR/?account_id=${id}`).then(res => res.json())
+    const updated = await fetch(`${API_BASE_URL}/compareResultTOR/?account_id=${id}`).then(res => res.json())
     setApplicantTor(updated)
   }
 
   // Save Note
   const handleSaveNote = async () => {
     if (!selectedEntry) return
-    await fetch(`http://localhost:8000/api/update_note/`, {
+    await fetch(`${API_BASE_URL}/update_note/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: selectedEntry.id, notes: noteText }),
     })
-    const updated = await fetch(`http://localhost:8000/api/compareResultTOR/?account_id=${id}`).then(res => res.json())
+    const updated = await fetch(`${API_BASE_URL}/compareResultTOR/?account_id=${id}`).then(res => res.json())
     setApplicantTor(updated)
     setShowNoteModal(false)
   }

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { GraduationCap } from "lucide-react"
+import API_BASE_URL from "../config/api"
 
 export default function FinalDocumentPage() {
   const { id } = useParams()
@@ -13,7 +14,7 @@ export default function FinalDocumentPage() {
 
   useEffect(() => {
     // Fetch applicant profile
-    fetch(`http://localhost:8000/api/profile/?user_id=${id}`)
+    fetch(`${API_BASE_URL}/profile/?user_id=${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data && data.length > 0) setProfile(data[0])
@@ -21,13 +22,13 @@ export default function FinalDocumentPage() {
       .catch((err) => console.error("Error fetching profile:", err))
 
     // Fetch CIT TOR
-    fetch("http://localhost:8000/api/citTorContent/")
+    fetch(`${API_BASE_URL}/citTorContent/`)
       .then((res) => res.json())
       .then(setCitTor)
       .catch((err) => console.error("Error fetching CIT TOR:", err))
 
     // Fetch Applicant TOR
-    fetch(`http://localhost:8000/api/compareResultTOR/?account_id=${id}`)
+    fetch(`${API_BASE_URL}/compareResultTOR/?account_id=${id}`)
       .then((res) => res.json())
       .then(setApplicantTor)
       .catch((err) => console.error("Error fetching Applicant TOR:", err))

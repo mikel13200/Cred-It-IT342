@@ -8,14 +8,15 @@ import {
   FinalDocumentPage,
    RequestPage,
 } from './pages/faculty';
-import { Notification } from './components/common';
+import { Notification, StudentRoute, FacultyRoute } from './components/common';
 import { useNotification } from './hooks';
+import { AuthProvider } from './context';
 
-function App() {
+function AppContent() {
   const { notification, closeNotification } = useNotification();
 
   return (
-    <Router>
+    <>
       {/* Global Notification */}
       {notification?.show && (
         <Notification
@@ -27,14 +28,66 @@ function App() {
       )}
 
       <Routes>
+        {/* Public Route */}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/HomePage" element={<StudentHome />} />
-        <Route path="/DepartmentHome" element={<DepartmentHome />} />
-        <Route path="/request/:id" element={<RequestPage />} />
-        <Route path="/document/:id" element={<DocumentPage />} />
-        <Route path="/finalDocument/:id" element={<FinalDocumentPage />} />
+        
+        {/* Protected Student Routes */}
+        <Route 
+          path="/HomePage" 
+          element={
+            <StudentRoute>
+              <StudentHome />
+            </StudentRoute>
+          } 
+        />
+        
+        {/* Protected Faculty Routes */}
+        <Route 
+          path="/DepartmentHome" 
+          element={
+            <FacultyRoute>
+              <DepartmentHome />
+            </FacultyRoute>
+          } 
+        />
+        <Route 
+          path="/request/:id" 
+          element={
+            <FacultyRoute>
+              <RequestPage />
+            </FacultyRoute>
+          } 
+        />
+        <Route 
+          path="/document/:id" 
+          element={
+            <FacultyRoute>
+              <DocumentPage />
+            </FacultyRoute>
+          } 
+        />
+        <Route 
+          path="/finalDocument/:id" 
+          element={
+            <FacultyRoute>
+              <FinalDocumentPage />
+            </FacultyRoute>
+          } 
+        />
+        
+        {/* Catch all - redirect to landing */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </Router>
   );
 }

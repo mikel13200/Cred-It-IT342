@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { GraduationCap, ChevronDown } from 'lucide-react';
 import {
@@ -49,11 +49,7 @@ export default function DocumentPage() {
 
   const { showSuccess, showError } = useNotification();
 
-  useEffect(() => {
-    fetchData();
-  }, [id]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [profileData, citTorData, applicantTorData] = await Promise.all([
@@ -72,7 +68,11 @@ export default function DocumentPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, showError]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const refreshApplicantTor = async () => {
     try {

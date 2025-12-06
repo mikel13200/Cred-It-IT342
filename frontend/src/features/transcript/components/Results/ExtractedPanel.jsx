@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { torApi, requestApi } from '../../../../api';
-import { Modal, ModalContent, Button, ConfirmDialog, Loader } from '../../../../components/common';
+import { Modal, ModalContent, Button, ConfirmDialog } from '../../../../components/common';
 import { useNotification } from '../../../../hooks';
 import ComparisonTable from './ComparisonTable';
 import SummaryView from './SummaryView';
@@ -31,7 +31,7 @@ export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
     setIsRequesting(true);
 
     try {
-      const result = await requestApi.requestTor(accountId);
+      await requestApi.requestTor(accountId);
       showSuccess('Request Creditation submitted successfully!');
       setHideRequestButton(true);
       setTimeout(() => onClose(), 15000);

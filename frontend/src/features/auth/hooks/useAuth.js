@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '../../../api';
 import { useNotification } from '../../../hooks';
+import { useAuthContext, USER_ROLES } from '../../../context';
 
 export function useAuth() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { showSuccess, showError } = useNotification();
+  const { login: contextLogin, logout: contextLogout } = useAuthContext();
   const [loading, setLoading] = useState(false);
 
   const login = async (accountID, accountPass) => {
@@ -13,18 +16,30 @@ export function useAuth() {
     try {
       const data = await authApi.login(accountID, accountPass);
 
-      if (data.message) {
-        // Store username
-        localStorage.setItem('userName', accountID);
-        showSuccess('Login successful!');
+      if (data.message || data.accessToken) {
+        // Store auth data in context
+        const loginSuccess = contextLogin({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+          user: data.user,
+        });
 
-        // Navigate based on role
-        if (data.status === 'Student') {
-          navigate('/HomePage');
-        } else if (data.status === 'Faculty') {
-          navigate('/DepartmentHome');
-        } else {
-          showError('Unauthorized role');
+        if (loginSuccess) {
+          showSuccess('Login successful!');
+
+          // Check if there's a redirect location saved
+          const from = location.state?.from;
+          
+          // Navigate based on role or saved location
+          if (from && from !== '/') {
+            navigate(from, { replace: true });
+          } else if (data.user.role === USER_ROLES.STUDENT) {
+            navigate('/HomePage', { replace: true });
+          } else if (data.user.role === USER_ROLES.FACULTY) {
+            navigate('/DepartmentHome', { replace: true });
+          } else {
+            showError('Unauthorized role');
+          }
         }
       }
     } catch (error) {
@@ -48,9 +63,19 @@ export function useAuth() {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('userName');
-    navigate('/');
+  const logout = async () => {
+    setLoading(true);
+    try {
+      // Call logout API to invalidate token on server
+      await authApi.logout();
+    } catch (error) {
+      console.warn('Logout API error:', error);
+    } finally {
+      // Always clear local state
+      contextLogout();
+      setLoading(false);
+      navigate('/', { replace: true });
+    }
   };
 
   return { login, register, logout, loading };

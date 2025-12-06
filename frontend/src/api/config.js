@@ -4,6 +4,9 @@ export const API_ENDPOINTS = {
   // Auth
   LOGIN: '/login/',
   REGISTER: '/register/',
+  LOGOUT: '/logout/',
+  TOKEN_REFRESH: '/token/refresh/',
+  TOKEN_VERIFY: '/token/verify/',
   
   // Profile
   PROFILE: '/profile/',

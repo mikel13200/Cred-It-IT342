@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Loader } from '../';
+import { Loader } from '../';
 
 export function DataTable({ 
   columns, 

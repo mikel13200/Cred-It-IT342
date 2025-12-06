@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header, SidebarFaculty } from '../../components/layout';
 import {
@@ -7,18 +7,21 @@ import {
   DataTable,
   AdvancedSearchBar,
   StatusBadge,
-  Loader,
 } from '../../components/common';
 import { requestApi } from '../../api';
 import { useNotification, useDebounce } from '../../hooks';
 import { formatDate } from '../../utils';
+import { useAuthContext } from '../../context';
 
 export default function DepartmentHome() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userName, setUserName] = useState('');
   const [activeTab, setActiveTab] = useState('requests');
   const [loading, setLoading] = useState(false);
+
+  // Get user from auth context instead of localStorage
+  const { user } = useAuthContext();
+  const userName = user?.username || '';
 
   // Data states
   const [requests, setRequests] = useState([]);
@@ -32,14 +35,7 @@ export default function DepartmentHome() {
 
   const { showError } = useNotification();
 
-  useEffect(() => {
-    const storedName = localStorage.getItem('userName');
-    if (storedName) setUserName(storedName);
-
-    fetchAllData();
-  }, []);
-
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
       const [requestsData, applicationsData, acceptedData] = await Promise.all([
@@ -56,7 +52,11 @@ export default function DepartmentHome() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
+
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   const filterData = (data, idField) => {
     if (!debouncedSearch.trim()) return data;
